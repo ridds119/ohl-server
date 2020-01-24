@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   has_one_attached :avatar
   enum role: [:user, :admin]
+  serialize :ids, Array
   after_initialize :set_default_role, :if => :new_record?
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable

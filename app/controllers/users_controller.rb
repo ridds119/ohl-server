@@ -1,6 +1,8 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
-  after_action :verify_authorized
+  before_action :set_user, except: [:index, :create]
+  after_action :verify_authorized 
+
   def index
     @users = User.all.with_attached_image 
     authorize User
@@ -8,7 +10,6 @@ class UsersController < ApplicationController
   end
 
   def show
-    @user = User.find(params["id"])
     authorize @user
     render json: @user
   end
@@ -19,12 +20,11 @@ class UsersController < ApplicationController
     if user.save
       render json: User.all.with_attached_image
     else
-      render json: { error: "Unable to Create" }, status: :unprocessable_entity
+      respond_with_errors(@post)
     end
   end
 
   def destroy
-    user = User.find(params["id"])
     authorize user
     if user.destroy
       render json: User.all.with_attached_image
@@ -34,7 +34,6 @@ class UsersController < ApplicationController
   end
 
   def update
-    @user = User.find(params["id"])
     authorize @user
     if @user.update(secure_params)
       render json: User.all.with_attached_image
@@ -44,7 +43,6 @@ class UsersController < ApplicationController
   end
 
   def imageUpload
-    @user = User.find(params["id"])
     authorize @user
     if @user.avatar.attached?
       @user.avatar.purge
@@ -57,7 +55,6 @@ class UsersController < ApplicationController
   end
 
   # def fetchImage
-  #   @user = User.find(params["id"])
   #   authorize @user
   #   if @user.avatar.attached?
   #     return plain: Rails.application.routes.url_helpers.rails_blob_path(user.avatar, only_path: true)
@@ -68,8 +65,13 @@ class UsersController < ApplicationController
 
   private
 
+  def set_user
+    @user = User.find(params["id"])
+  end
+
   def secure_params
-    params.require("user").permit(:name, :email, :role, :password, :avatar)
+    ActiveModelSerializers::Deserialization.jsonapi_parse!(params,
+        only: [:name, :email, :role, :password, :avatar])
   end
 
 end
