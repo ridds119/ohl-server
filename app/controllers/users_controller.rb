@@ -4,7 +4,7 @@ class UsersController < ApplicationController
   after_action :verify_authorized 
 
   def index
-    @users = User.all.with_attached_image 
+    @users = User.all.with_attached_avatar 
     authorize User
     render json: @users
   end
@@ -18,16 +18,16 @@ class UsersController < ApplicationController
     user = User.new(secure_params)
     authorize user
     if user.save
-      render json: User.all.with_attached_image
+      render json: User.all.with_attached_avatar
     else
-      respond_with_errors(@post)
+      respond_with_errors(@user)
     end
   end
 
   def destroy
     authorize user
     if user.destroy
-      render json: User.all.with_attached_image
+      render json: User.all.with_attached_avatar
     else
       render json: { error: 'Some error occured' }, status: :not_found
     end
@@ -36,9 +36,10 @@ class UsersController < ApplicationController
   def update
     authorize @user
     if @user.update(secure_params)
-      render json: User.all.with_attached_image
+      @user.avatar.attach(secure_params[:photo])
+      render json: User.all.with_attached_avatar
     else
-      render json: { error: "Unable to update" }, status: :not_found
+      respond_with_errors @user
     end
   end
 
@@ -48,7 +49,7 @@ class UsersController < ApplicationController
       @user.avatar.purge
     end
     if @user.avatar.attach(params["avatar"])
-      render json: User.all.with_attached_image
+      render json: User.all.with_attached_avatar
     else
       render json: { error: 'Unable to update' }, status: :not_found
     end
@@ -69,9 +70,13 @@ class UsersController < ApplicationController
     @user = User.find(params["id"])
   end
 
+  # def secure_params
+  #   ActiveModelSerializers::Deserialization.jsonapi_parse!(params,
+  #       only: [:name, :email, :role, :password, :avatar])
+  # end
+
   def secure_params
-    ActiveModelSerializers::Deserialization.jsonapi_parse!(params,
-        only: [:name, :email, :role, :password, :avatar])
+    params.require(:user).permit(:name, :email, :role, :password, :avatar)
   end
 
 end

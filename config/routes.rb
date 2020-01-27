@@ -18,4 +18,5 @@ Rails.application.routes.draw do
   get 'welcome/show'
   # get 'users',controller: :welcome, action: :show
   root :to => "welcome#index" 
+  post '/rails/active_storage/direct_uploads' => 'direct_uploads#create'
 end
