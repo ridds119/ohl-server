@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  Rails.application.routes.default_url_options[:host] = "ohl.api.localhost"
   devise_for :users,
              defaults: { format: :json },
              path: '',
@@ -12,8 +13,8 @@ Rails.application.routes.draw do
                registrations: 'registrations'
              }
   resources :users
-  post 'user/image/:id/', controller: :users, action: :imageUpload
-  # get 'user/image/:id/', controller: :users, action: :fetchImage
+  post 'users/image/:id/', controller: :users, action: :imageUpload
+  get 'users/image/:id/', controller: :users, action: :fetchImage
   get 'welcome/index'
   get 'welcome/show'
   # get 'users',controller: :welcome, action: :show

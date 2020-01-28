@@ -1,5 +1,7 @@
 class User < ApplicationRecord
+  include ActiveStorageSupport::SupportForBase64
   include Rails.application.routes.url_helpers
+  # has_one_base64_attached :avatar
   has_one_attached :avatar
   enum role: [:user, :admin]
   # serialize :ids, Array
@@ -15,11 +17,13 @@ class User < ApplicationRecord
             format: { with: URI::MailTo::EMAIL_REGEXP },
             presence: true,
             uniqueness: { case_sensitive: false}
+
+  def get_avatar_url
+    url_for(self.avatar)
+  end
   protected
     def set_default_role
       self.role ||= :user
     end
-    def get_avatar_url
-      url_for(self.avatar)
-    end
+
 end

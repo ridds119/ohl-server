@@ -17,6 +17,7 @@ gem 'puma', '~> 4.1'
 # gem 'bcrypt', '~> 3.1.7'
 # gem 'active_model_serializers'
 # Use Active Storage variant
+gem 'active_storage_base64'
 gem 'image_processing', '~> 1.2'
 gem 'devise', '~> 4.0'
 gem 'devise-jwt', '~> 0.5.9'
@@ -27,6 +28,7 @@ gem 'bootsnap', '>= 1.4.2', require: false
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 gem 'rack-cors'
+gem 'pry', '~> 0.12.2'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
